@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGMA | Institutional Quant Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #000000;
+    --carbon: #0a0a0a;
+    --deep: #050505;
+    --ash: #e8e8e8;
+    --steel: #6b6b6b;
+    --terminal: #00ff94;
+    --danger: #ff4444;
+    --blue: #60a5fa;
+    --border: rgba(255,255,255,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #000;
+    color: #e8e8e8;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 2rem; left: 50%; transform: translateX(-50%);
+    z-index: 100; width: 90%; max-width: 600px;
+  }
+  .nav-inner {
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-links { display: flex; gap: 0.25rem; }
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--steel); text-decoration: none;
+    padding: 0.5rem 1rem; border-radius: 999px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--ash); background: rgba(255,255,255,0.05); }
+  .nav-cta {
+    background: var(--terminal); color: #000;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.5rem 1.25rem; border-radius: 999px;
+    text-decoration: none; display: flex; align-items: center; gap: 0.4rem;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: #fff; }
+
+  /* HERO */
+  .hero {
+    min-height: 95vh; display: flex; align-items: center;
+    padding: 8rem 0 5rem; position: relative; overflow: hidden;
+    background: #000;
+  }
+  .bars-bg {
+    position: absolute; inset: 0; opacity: 0.4; pointer-events: none;
+    display: flex; gap: 0;
+  }
+  .bar {
+    flex: 1; height: 100%;
+    background: linear-gradient(180deg, transparent 0%, rgba(0,255,148,0.03) 50%, transparent 100%);
+    border-right: 1px solid rgba(0,255,148,0.02);
+    animation: barPulse 4s ease-in-out infinite;
+  }
+  .bar:nth-child(even) { animation-delay: 0.5s; }
+  .bar:nth-child(3n) { animation-delay: 1s; }
+  @keyframes barPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+  }
+  .hero-overlay-left {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, #000 30%, rgba(0,0,0,0.8) 60%, transparent);
+    pointer-events: none;
+  }
+  .hero-overlay-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 8rem;
+    background: linear-gradient(to top, #000, transparent);
+    pointer-events: none;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 10; }
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+  
+  .status-badge {
+    display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;
+  }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--terminal);
+    position: relative;
+  }
+  .status-dot::before {
+    content: ''; position: absolute; inset: -3px; border-radius: 50%;
+    background: rgba(0,255,148,0.4); animation: ping 2s ease-in-out infinite;
+  }
+  @keyframes ping {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.8); opacity: 0; }
+  }
+  .status-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--terminal);
+  }
+
+  h1 {
+    font-size: clamp(36px, 4.5vw, 72px);
+    font-weight: 600; line-height: 1.1;
+    letter-spacing: -0.04em;
+    margin-bottom: 1.5rem;
+    white-space: nowrap;
+  }
+  h1 .gradient {
+    display: block;
+    background: linear-gradient(90deg, #555 0%, #fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    color: var(--steel); font-size: 1.1rem; line-height: 1.6;
+    max-width: 480px; margin-bottom: 2.5rem;
+  }
+  .hero-ctas { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .btn-outline {
+    position: relative; padding: 1rem 2rem;
+    background: transparent; border: 1px solid rgba(0,255,148,0.3);
+    color: var(--ash); cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 0.5rem;
+    transition: all 0.3s; overflow: hidden;
+  }
+  .btn-outline::before {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(0,255,148,0.05); transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .btn-outline:hover { border-color: var(--terminal); color: var(--terminal); }
+  .btn-outline:hover::before { transform: scaleX(1); }
+  .btn-link {
+    background: none; border: none; cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--terminal); border-bottom: 1px solid rgba(0,255,148,0.3);
+    padding-bottom: 2px; transition: border-color 0.2s;
+  }
+  .btn-link:hover { border-color: var(--terminal); }
+
+  /* TERMINAL CARD */
+  .terminal-card {
+    background: rgba(5,5,5,0.9);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: 0 0 50px rgba(0,255,148,0.08);
+    position: relative;
+  }
+  .term-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.03);
+  }
+  .term-dots { display: flex; gap: 6px; }
+  .term-dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .term-dots span:nth-child(1) { background: rgba(255,100,100,0.5); }
+  .term-dots span:nth-child(2) { background: rgba(255,200,0,0.5); }
+  .term-dots span:nth-child(3) { background: rgba(0,200,80,0.5); }
+  .term-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--steel);
+  }
+  .live-feed {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--terminal);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .term-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .stat-box {
+    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.01);
+    padding: 0.75rem;
+  }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--steel); margin-bottom: 4px;
+  }
+  .stat-val {
+    font-size: 1.25rem; font-weight: 500; color: var(--ash);
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .stat-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--terminal);
+  }
+
+  /* CHART */
+  .chart-area {
+    position: relative; height: 192px;
+    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(0,0,0,0.5); overflow: hidden;
+  }
+  .chart-grid {
+    position: absolute; inset: 0;
+    display: grid; grid-template-columns: repeat(6,1fr); grid-template-rows: repeat(4,1fr);
+  }
+  .chart-grid div { border-right: 1px solid rgba(255,255,255,0.04); border-top: 1px solid rgba(255,255,255,0.04); }
+  .chart-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
+  .scan-line {
+    position: absolute; top: 0; bottom: 0; width: 1px;
+    background: rgba(0,255,148,0.5); left: 80%; z-index: 3;
+    box-shadow: 0 0 10px var(--terminal);
+    animation: scan 3s ease-in-out infinite;
+  }
+  @keyframes scan { 0%, 100% { left: 75%; } 50% { left: 85%; } }
+  .pattern-badge {
+    position: absolute; top: 0.75rem; left: 50%; transform: translateX(-50%);
+    background: rgba(10,10,10,0.9); border: 1px solid rgba(0,255,148,0.3);
+    padding: 3px 8px; display: flex; align-items: center; gap: 5px; z-index: 4;
+  }
+  .pattern-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--terminal); animation: pulse 1.5s infinite; }
+  .pattern-text { font-family: 'JetBrains Mono', monospace; font-size: 8px; color: var(--terminal); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* LOGS */
+  .logs { font-family: 'JetBrains Mono', monospace; font-size: 9px; height: 80px; overflow: hidden; position: relative; }
+  .logs::before {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40px;
+    background: linear-gradient(to top, rgba(5,5,5,0.95), transparent); z-index: 1;
+  }
+  .log-row { display: flex; justify-content: space-between; padding: 2px 0; color: rgba(107,107,107,0.7); }
+  .log-exec { color: var(--terminal); }
+  .log-info { color: var(--blue); }
+  .log-warn { color: var(--danger); }
+  .term-glow {
+    position: absolute; inset: -1rem; background: rgba(0,255,148,0.15);
+    filter: blur(60px); border-radius: 50%; z-index: -1; pointer-events: none;
+  }
+
+  /* TICKER */
+  .ticker {
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.5);
+    padding: 1rem 0; overflow: hidden; position: relative; z-index: 20;
+  }
+  .ticker-track {
+    display: flex; gap: 2rem; animation: marquee 40s linear infinite;
+    white-space: nowrap;
+  }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .ticker-item {
+    font-size: 1.1rem; font-weight: 600; color: rgba(232,232,232,0.6);
+    flex-shrink: 0;
+  }
+  .ticker-sep { color: rgba(107,107,107,0.4); flex-shrink: 0; }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 20; }
+  .section-infrastructure { padding: 6rem 0; background: #050505; }
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 500; letter-spacing: -0.03em; color: var(--ash);
+    margin-bottom: 1rem;
+  }
+  .section-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 1px solid var(--border); padding-bottom: 2rem; margin-bottom: 4rem;
+  }
+  .arch-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--steel); letter-spacing: 0.1em;
+  }
+
+  .features-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; height: 500px; }
+  .feature-card {
+    background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+    padding: 2rem; display: flex; flex-direction: column;
+    transition: border-color 0.3s;
+  }
+  .feature-card:hover { border-color: rgba(0,255,148,0.3); }
+  .feature-icon { color: var(--terminal); margin-bottom: 1rem; }
+  .feature-icon svg { width: 24px; height: 24px; stroke-width: 1.5; }
+  .feature-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--ash); margin-bottom: 0.5rem;
+  }
+  .feature-desc { font-size: 13px; color: var(--steel); line-height: 1.6; max-width: 360px; }
+  .feature-cards-stack { display: flex; flex-direction: column; gap: 1rem; }
+  .feature-card-sm { flex: 1; }
+
+  .mini-terminal {
+    flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.04);
+    padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    height: 180px; overflow: hidden; position: relative; margin-top: auto;
+  }
+  .mini-terminal::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 50px;
+    background: linear-gradient(to top, rgba(5,5,5,0.95), transparent);
+  }
+  .mt-row { display: flex; justify-content: space-between; padding: 2px 0; color: rgba(107,107,107,0.7); }
+  .mt-buy { color: var(--terminal); }
+  .mt-sell { color: var(--danger); }
+
+  .gauge { position: absolute; bottom: 1rem; right: 1rem; width: 64px; height: 32px; }
+  .gauge svg { width: 100%; height: 100%; }
+
+  /* METRICS */
+  .metrics-section {
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.5);
+  }
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .metric-cell {
+    padding: 3rem 2rem;
+    border-right: 1px solid var(--border);
+  }
+  .metric-cell:last-child { border-right: none; }
+  .metric-num {
+    font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 600;
+    letter-spacing: -0.04em; color: var(--ash); margin-bottom: 0.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .metric-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  .metric-label.green { color: var(--terminal); }
+  .metric-label.gray { color: var(--steel); }
+
+  /* METHODOLOGY */
+  .section-methodology { padding: 8rem 0; background: #050505; }
+  .timeline-container { position: relative; }
+  .timeline-line {
+    position: absolute; left: 50%; top: 0; bottom: 0; width: 1px;
+    background: rgba(255,255,255,0.08); transform: translateX(-50%);
+  }
+  .timeline-line::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30%;
+    background: linear-gradient(to bottom, var(--terminal), transparent);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  .timeline-step {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 6rem; position: relative;
+  }
+  .timeline-dot {
+    position: absolute; left: 50%; top: 0; width: 12px; height: 12px;
+    background: #000; border: 1px solid var(--terminal); border-radius: 50%;
+    transform: translateX(-50%);
+  }
+  .timeline-dot.glow { box-shadow: 0 0 10px var(--terminal); }
+  .step-left { text-align: right; padding-right: 3rem; }
+  .step-right { padding-left: 3rem; }
+  .step-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--terminal); margin-bottom: 0.5rem; display: block;
+  }
+  .step-title { font-size: 1.875rem; font-weight: 500; color: var(--ash); margin-bottom: 1rem; }
+  .step-desc { color: var(--steel); font-size: 1.1rem; line-height: 1.6; }
+  .step-placeholder { display: flex; flex-direction: column; gap: 8px; opacity: 0.15; padding-right: 3rem; }
+  .step-placeholder div { height: 8px; border-radius: 4px; background: var(--steel); }
+  .step-placeholder .w1 { width: 128px; margin-left: auto; }
+  .step-placeholder .w2 { width: 96px; margin-left: auto; }
+  .step-placeholder-left { padding-left: 3rem; }
+  .step-placeholder-left div { margin-left: 0; }
+
+  /* COMPARISON */
+  .section-comparison { padding: 6rem 0; background: rgba(10,10,10,0.5); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .comparison-title {
+    font-size: clamp(2rem, 4vw, 3rem); font-weight: 500;
+    letter-spacing: -0.04em; text-align: center; margin-bottom: 4rem; color: var(--ash);
+    text-transform: uppercase;
+  }
+  .comparison-table { max-width: 896px; margin: 0 auto; border: 1px solid var(--border); background: #000; }
+  .table-row { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--border); }
+  .table-row:last-child { border-bottom: none; }
+  .table-row:hover { background: rgba(255,255,255,0.02); }
+  .table-cell { padding: 1.5rem; font-size: 14px; }
+  .table-cell.header {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--steel);
+  }
+  .table-cell.header.sigma { color: var(--terminal); }
+  .table-cell.trad { border-left: 1px solid var(--border); color: var(--steel); }
+  .table-cell.sig {
+    border-left: 1px solid var(--border); font-weight: 600; color: var(--ash);
+    background: rgba(0,255,148,0.04);
+    transition: background 0.2s;
+  }
+  .table-row:hover .table-cell.sig { background: rgba(0,255,148,0.08); }
+
+  /* PRICING */
+  .section-pricing { padding: 6rem 0; background: #050505; }
+  .pricing-toggle {
+    display: flex; justify-content: center; margin-bottom: 3rem;
+  }
+  .toggle-wrap {
+    background: rgba(10,10,10,0.8); border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px; display: flex; gap: 4px;
+  }
+  .toggle-btn {
+    padding: 0.5rem 1.5rem; border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+    cursor: pointer; border: none; transition: all 0.2s;
+  }
+  .toggle-btn.active { background: rgba(255,255,255,0.1); color: var(--ash); }
+  .toggle-btn.inactive { background: transparent; color: var(--steel); }
+  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 896px; margin: 0 auto; }
+  .price-card {
+    background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+    padding: 3rem; display: flex; flex-direction: column;
+    transition: border-color 0.3s;
+  }
+  .price-card:hover { border-color: rgba(255,255,255,0.2); }
+  .price-card.recommended { border-color: var(--terminal); position: relative; overflow: hidden; }
+  .recommended-badge {
+    position: absolute; top: 0; right: 0;
+    background: var(--terminal); color: #000;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 12px;
+  }
+  .price-plan-name {
+    font-family: 'JetBrains Mono', monospace; font-size: 18px;
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .price-plan-name.default { color: var(--ash); }
+  .price-plan-name.rec { color: var(--terminal); }
+  .price-amount {
+    font-size: 2.5rem; font-weight: 500; color: var(--ash); margin-bottom: 2rem;
+  }
+  .price-amount span { font-size: 1.1rem; color: var(--steel); font-weight: 400; }
+  .price-features { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem; flex: 1; }
+  .price-features li { display: flex; align-items: center; gap: 0.75rem; color: var(--steel); font-size: 14px; }
+  .price-features li svg { color: var(--terminal); flex-shrink: 0; }
+  .price-btn {
+    width: 100%; padding: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s; border: none;
+  }
+  .price-btn.outline {
+    background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--ash);
+  }
+  .price-btn.outline:hover { background: var(--ash); color: #000; }
+  .price-btn.solid { background: var(--terminal); color: #000; font-weight: 700; }
+  .price-btn.solid:hover { background: #fff; }
+
+  /* FOOTER */
+  footer {
+    background: #000; border-top: 1px solid var(--border);
+    padding: 5rem 0 3rem;
+  }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 5rem; }
+  .footer-logo { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.04em; color: var(--ash); margin-bottom: 1.5rem; }
+  .footer-status { display: flex; align-items: center; gap: 0.5rem; }
+  .footer-status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--terminal); animation: pulse 2s infinite; }
+  .footer-status-text {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--steel);
+  }
+  .footer-col-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--steel); margin-bottom: 1.5rem;
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+  .footer-links a { color: rgba(232,232,232,0.7); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--terminal); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.04); padding-top: 2rem; }
+  .footer-copy {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--steel);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-links">
+      <a href="#methodology">Methodology</a>
+      <a href="#performance">Performance</a>
+      <a href="#risk">Risk Model</a>
+    </div>
+    <a href="#" class="nav-cta">Deploy Capital <span>→</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="bars-bg">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+  <div class="hero-overlay-left"></div>
+  <div class="hero-overlay-bottom"></div>
+
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="status-badge">
+          <div class="status-dot"></div>
+          <span class="status-text mono">System Operational</span>
+        </div>
+        <h1>
+          REMOVE EMOTION.<br>
+          <span class="gradient">INSERT ALPHA.</span>
+        </h1>
+        <p class="hero-desc">
+          SIGMA replaces human intuition with institutional-grade quantitative modeling. We simulate 10,000 market scenarios per second to optimize your Sharpe ratio.
+        </p>
+        <div class="hero-ctas">
+          <button class="btn-outline mono">Initialize Portfolio <span>›</span></button>
+          <button class="btn-link mono">View Live Performance</button>
+        </div>
+      </div>
+
+      <div style="position:relative;">
+        <div class="terminal-card">
+          <div class="term-header">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="term-dots"><span></span><span></span><span></span></div>
+              <span class="term-title mono">TERM_01 // SIGMA_CORE</span>
+            </div>
+            <span class="live-feed mono">LIVE_FEED ●</span>
+          </div>
+          <div class="term-body">
+            <div class="stats-row">
+              <div class="stat-box">
+                <div class="stat-label mono">Portfolio Delta</div>
+                <div class="stat-val">+1.24% <span class="stat-badge">▲</span></div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label mono">Vol (30d)</div>
+                <div class="stat-val">14.2 <span class="stat-badge">LOW</span></div>
+              </div>
+            </div>
+
+            <div class="chart-area">
+              <div class="chart-grid">
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+              </div>
+              <div class="scan-line"></div>
+              <svg class="chart-svg" viewBox="0 0 320 192" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(0,255,148,0.2)"/>
+                    <stop offset="100%" stop-color="rgba(0,255,148,0)"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0,150 L25,140 L50,145 L75,115 L100,120 L125,75 L150,90 L175,60 L200,68 L225,38 L250,50 L275,25 L300,6 L320,150 Z" fill="url(#cg)"/>
+                <path d="M0,150 L25,140 L50,145 L75,115 L100,120 L125,75 L150,90 L175,60 L200,68 L225,38 L250,50 L275,25 L300,6" fill="none" stroke="#00FF94" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+              <div class="pattern-badge">
+                <div class="pattern-dot"></div>
+                <span class="pattern-text mono">Pattern Detected: Bull Flag</span>
+              </div>
+            </div>
+
+            <div class="logs">
+              <div class="log-row"><span class="log-exec mono">EXEC</span><span>BTC/USD LIMIT BUY</span><span>200ms</span></div>
+              <div class="log-row"><span class="log-exec mono">EXEC</span><span>ETH/USD MARKET</span><span>15ms</span></div>
+              <div class="log-row"><span class="log-info mono">INFO</span><span>REBALANCING POOL A</span><span>102ms</span></div>
+              <div class="log-row"><span class="log-exec mono">EXEC</span><span>SOL/USDC HEDGE</span><span>45ms</span></div>
+              <div class="log-row"><span class="log-warn mono">WARN</span><span>SLIPPAGE &gt; 0.1%</span><span>01ms</span></div>
+              <div class="log-row"><span class="log-exec mono">EXEC</span><span>NVDA ARB</span><span>08ms</span></div>
+            </div>
+          </div>
+          <div style="position:absolute;right:-12px;top:40px;display:flex;flex-direction:column;gap:8px;">
+            <div style="width:4px;height:32px;background:rgba(255,255,255,0.08);border-radius:2px;"></div>
+            <div style="width:4px;height:16px;background:rgba(255,255,255,0.08);border-radius:2px;"></div>
+          </div>
+        </div>
+        <div class="term-glow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="mono" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);">DATA INGESTION PIPELINES:</span>
+    <span class="ticker-sep">|</span>
+    <span class="ticker-item">NASDAQ</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">BLOOMBERG TERMINAL</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">COINBASE PRIME</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">CBOE VOLATILITY</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">NYSE ARCA</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">CHICAGO MERCANTILE</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">NASDAQ</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">BLOOMBERG TERMINAL</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">COINBASE PRIME</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">CBOE VOLATILITY</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">NYSE ARCA</span><span class="ticker-sep">|</span>
+    <span class="ticker-item">CHICAGO MERCANTILE</span>
+  </div>
+</div>
+
+<!-- INFRASTRUCTURE -->
+<section class="section-infrastructure">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">THE INFRASTRUCTURE<br>OF WEALTH.</h2>
+      <span class="arch-label mono">[ SYSTEM ARCHITECTURE v2.0 ]</span>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+            </div>
+            <div class="feature-title mono">Zero-Latency Routing</div>
+            <p class="feature-desc">Trades executed in &lt;40ms across 12 exchanges using proprietary direct memory access.</p>
+          </div>
+          <div style="background:rgba(10,10,10,0.8);border:1px solid var(--border);padding:4px;border-radius:2px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--terminal);animation:pulse 2s infinite;"></div>
+          </div>
+        </div>
+        <div class="mini-terminal">
+          <div class="mt-row"><span class="mt-buy mono">BUY BTC-PERP</span><span>$64,231.50</span><span style="color:var(--steel);">12ms</span></div>
+          <div class="mt-row"><span class="mt-sell mono">SELL ETH-USD</span><span>$3,420.10</span><span style="color:var(--steel);">08ms</span></div>
+          <div class="mt-row"><span class="mt-buy mono">BUY SOL-USDC</span><span>$145.20</span><span style="color:var(--steel);">15ms</span></div>
+          <div class="mt-row"><span class="mt-buy mono">BUY NVDA</span><span>$890.00</span><span style="color:var(--steel);">32ms</span></div>
+          <div class="mt-row"><span class="mt-sell mono">HEDGE SPX</span><span>5100.25</span><span style="color:var(--steel);">11ms</span></div>
+          <div class="mt-row"><span class="mt-buy mono">ARB USDT</span><span>1.0001</span><span style="color:var(--steel);">04ms</span></div>
+          <div class="mt-row"><span class="mt-buy mono">BUY BTC-PERP</span><span>$64,232.00</span><span style="color:var(--steel);">12ms</span></div>
+        </div>
+      </div>
+
+      <div class="feature-cards-stack">
+        <div class="feature-card feature-card-sm" style="position:relative;">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+          </div>
+          <div class="feature-title mono">Tail Risk Hedging</div>
+          <p class="feature-desc" style="font-size:12px;">Automated stop-losses triggered by macro-events.</p>
+          <div class="gauge">
+            <svg viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 28 A24 24 0 0 1 56 28" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3"/>
+              <path d="M8 28 A24 24 0 0 1 32 4" fill="none" stroke="var(--terminal)" stroke-width="3" opacity="0.5"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="feature-card feature-card-sm" style="position:relative;">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
+          </div>
+          <div class="feature-title mono">Uncorrelated Assets</div>
+          <p class="feature-desc" style="font-size:12px;">Crypto, FX, and Equities blended for stability.</p>
+          <div style="position:absolute;bottom:1rem;right:1rem;">
+            <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="16" cy="16" r="10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/>
+              <circle cx="16" cy="16" r="10" fill="none" stroke="var(--terminal)" stroke-width="4" stroke-dasharray="20 60" transform="rotate(-90 16 16)" opacity="0.5"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section class="metrics-section" id="performance">
+  <div class="container">
+    <div class="metrics-grid">
+      <div class="metric-cell">
+        <div class="metric-num">34.2%</div>
+        <div class="metric-label green mono">Year to Date Return</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-num">$1.2B</div>
+        <div class="metric-label gray mono">Liquidity Provided</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-num">0.00s</div>
+        <div class="metric-label gray mono">Downtime Record</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY TIMELINE -->
+<section class="section-methodology" id="methodology">
+  <div class="container">
+    <div class="timeline-container">
+      <div class="timeline-line"></div>
+
+      <div class="timeline-step">
+        <div class="step-left">
+          <span class="step-tag mono">01_INPUT</span>
+          <h3 class="step-title">API Integration</h3>
+          <p class="step-desc">You connect your brokerage or wallet via API keys. Read-only access ensures absolute security while allowing instant data ingestion.</p>
+        </div>
+        <div class="timeline-dot"></div>
+        <div style="padding-left:3rem;display:flex;flex-direction:column;gap:8px;opacity:0.15;margin-top:0.5rem;">
+          <div style="height:8px;border-radius:4px;background:var(--steel);width:128px;"></div>
+          <div style="height:8px;border-radius:4px;background:var(--steel);width:96px;"></div>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div style="display:flex;flex-direction:column;gap:8px;opacity:0.15;padding-right:3rem;margin-top:0.5rem;text-align:right;">
+          <div style="height:8px;border-radius:4px;background:var(--steel);width:128px;margin-left:auto;"></div>
+          <div style="height:8px;border-radius:4px;background:var(--steel);width:96px;margin-left:auto;"></div>
+        </div>
+        <div class="timeline-dot"></div>
+        <div style="padding-left:3rem;">
+          <span class="step-tag mono">02_CALCULATION</span>
+          <h3 class="step-title">Regression Analysis</h3>
+          <p class="step-desc">SIGMA analyzes your holdings against 50+ macro-economic indicators to identify drag and calculate variance.</p>
+        </div>
+      </div>
+
+      <div class="timeline-step" style="margin-bottom:0;">
+        <div class="step-left">
+          <span class="step-tag mono">03_REBALANCE</span>
+          <h3 class="step-title">Auto-Execution</h3>
+          <p class="step-desc">The engine automatically re-weights your portfolio to the optimal efficient frontier, minimizing fee impact.</p>
+        </div>
+        <div class="timeline-dot glow"></div>
+        <div style="padding-left:3rem;opacity:0.15;margin-top:0.5rem;">
+          <div style="height:8px;border-radius:4px;background:var(--steel);width:128px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="section-comparison">
+  <div class="container">
+    <h2 class="comparison-title">WHY MATH BEATS MANAGEMENT.</h2>
+    <div class="comparison-table">
+      <div class="table-row">
+        <div class="table-cell header mono">Metric</div>
+        <div class="table-cell header trad mono">Traditional</div>
+        <div class="table-cell header sig sigma mono">SIGMA</div>
+      </div>
+      <div class="table-row">
+        <div class="table-cell">Fee Structure</div>
+        <div class="table-cell trad">2% Mgmt + 20% Perf</div>
+        <div class="table-cell sig">0.5% Flat</div>
+      </div>
+      <div class="table-row">
+        <div class="table-cell">Decision Time</div>
+        <div class="table-cell trad">3-5 Business Days</div>
+        <div class="table-cell sig">Instant (&lt;40ms)</div>
+      </div>
+      <div class="table-row">
+        <div class="table-cell">Emotional Bias</div>
+        <div class="table-cell trad">High (Human Error)</div>
+        <div class="table-cell sig">None (Algorithmic)</div>
+      </div>
+      <div class="table-row">
+        <div class="table-cell">Transparency</div>
+        <div class="table-cell trad">Quarterly PDF</div>
+        <div class="table-cell sig">Real-time Dashboard</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section-pricing" id="risk">
+  <div class="pricing-toggle">
+    <div class="toggle-wrap">
+      <button class="toggle-btn active mono">Personal</button>
+      <button class="toggle-btn inactive mono">Institutional</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-plan-name default mono">VALIDATOR</div>
+        <div class="price-amount">0.5% <span>/ yr</span></div>
+        <ul class="price-features">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            Automated Rebalancing
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            Tax-Loss Harvesting
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            Weekly Reports
+          </li>
+        </ul>
+        <button class="price-btn outline mono">Start Validation</button>
+      </div>
+
+      <div class="price-card recommended">
+        <div class="recommended-badge mono">Recommended</div>
+        <div class="price-plan-name rec mono">MARKET MAKER</div>
+        <div class="price-amount">0.8% <span>/ yr</span></div>
+        <ul class="price-features">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            All Validator features
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            Direct Indexing
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            Private API Access
+          </li>
+          <li style="color:var(--ash);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            Dedicated Quant Advisor
+          </li>
+        </ul>
+        <button class="price-btn solid mono">Initialize</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">SIGMA</div>
+        <div class="footer-status">
+          <div class="footer-status-dot"></div>
+          <span class="footer-status-text mono">All Systems Operational. Latency: 12ms.</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title mono">Platform</div>
+        <ul class="footer-links">
+          <li><a href="#">Login</a></li>
+          <li><a href="#">Docs</a></li>
+          <li><a href="#">API Status</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title mono">Legal</div>
+        <ul class="footer-links">
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Form ADV</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title mono">Social</div>
+        <ul class="footer-links">
+          <li><a href="#">Twitter/X</a></li>
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">Discord</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy mono">© 2026 SIGMA TECHNOLOGIES INC. NOT FINANCIAL ADVICE.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.toggle-btn').forEach(b => {
+      b.classList.remove('active'); b.classList.add('inactive');
+    });
+    btn.classList.remove('inactive'); btn.classList.add('active');
+  });
+});
+
+const logs = [
+  ['EXEC','BTC/USD LIMIT BUY','200ms'],['EXEC','ETH/USD MARKET','15ms'],
+  ['INFO','REBALANCING POOL A','102ms'],['EXEC','SOL/USDC HEDGE','45ms'],
+  ['EXEC','NVDA ARB','08ms'],['WARN','SLIPPAGE > 0.1%','01ms'],
+];
+const logContainer = document.querySelector('.logs');
+let logIndex = 0;
+setInterval(() => {
+  const entry = logs[logIndex % logs.length];
+  const row = document.createElement('div');
+  row.className = 'log-row';
+  const cls = entry[0] === 'EXEC' ? 'log-exec' : entry[0] === 'INFO' ? 'log-info' : 'log-warn';
+  row.innerHTML = `<span class="${cls} mono">${entry[0]}</span><span>${entry[1]}</span><span>${entry[2]}</span>`;
+  logContainer.insertBefore(row, logContainer.firstChild);
+  while (logContainer.children.length > 8) logContainer.removeChild(logContainer.lastChild);
+  logIndex++;
+}, 2500);
+</script>
+</body>
+</html>
