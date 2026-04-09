@@ -62,8 +62,8 @@
 
   /* HERO */
   .hero {
-    min-height: 95vh; display: flex; align-items: center;
-    padding: 8rem 0 5rem; position: relative; overflow: hidden;
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 0; position: relative; overflow: hidden;
     background: #000;
   }
   .bars-bg {
@@ -92,8 +92,8 @@
     background: linear-gradient(to top, #000, transparent);
     pointer-events: none;
   }
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 10; }
-  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 3rem; position: relative; z-index: 10; }
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
   
   .status-badge {
     display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;
@@ -125,7 +125,7 @@
   }
   h1 .gradient {
     display: block;
-    background: linear-gradient(90deg, #555 0%, #fff 100%);
+    background: linear-gradient(90deg, var(--steel), var(--ash));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
