@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIGMA | Institutional Quant Terminal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --void: #000000;
@@ -117,6 +117,7 @@
   }
 
   h1 {
+    font-family: 'Space Grotesk', sans-serif;
     font-size: clamp(36px, 4.5vw, 72px);
     font-weight: 600; line-height: 1.1;
     letter-spacing: -0.04em;
@@ -366,7 +367,7 @@
     background: rgba(255,255,255,0.08); transform: translateX(-50%);
   }
   .timeline-line::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30%;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8rem;
     background: linear-gradient(to bottom, var(--terminal), transparent);
     animation: pulse 3s ease-in-out infinite;
   }
