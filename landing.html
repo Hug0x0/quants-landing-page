@@ -358,10 +358,10 @@
   .metric-label.gray { color: var(--steel); }
 
   /* METHODOLOGY */
-  .section-methodology { padding: 8rem 0; background: #050505; }
+  .section-methodology { padding: 8rem 0; background: #050505; position: relative; }
   .timeline-container { position: relative; }
   .timeline-line {
-    position: absolute; left: 50%; top: 0; bottom: 0; width: 1px;
+    position: absolute; left: 50%; top: -8rem; bottom: 0; width: 1px;
     background: rgba(255,255,255,0.08); transform: translateX(-50%);
   }
   .timeline-line::before {
@@ -501,6 +501,74 @@
     font-family: 'JetBrains Mono', monospace; font-size: 10px;
     text-transform: uppercase; letter-spacing: 0.08em; color: var(--steel);
   }
+
+  /* ===== RESPONSIVE ===== */
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    .container { padding: 0 2rem; }
+    .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+    h1 { white-space: normal; }
+    .features-grid { grid-template-columns: 1fr; height: auto; }
+    .feature-cards-stack { flex-direction: row; gap: 1rem; }
+    .feature-card-sm { flex: 1; }
+    .timeline-step { grid-template-columns: 1fr; gap: 1rem; }
+    .timeline-line { display: none; }
+    .timeline-dot { display: none; }
+    .step-left { text-align: left; padding-right: 0; }
+    .step-right { padding-left: 0; }
+    .timeline-step > div[style*="padding-left:3rem"] { padding-left: 0 !important; }
+    .timeline-step > div[style*="padding-right:3rem"] { padding-right: 0 !important; }
+    .timeline-step > div[style*="opacity:0.15"] { display: none; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .container { padding: 0 1.25rem; }
+    nav { top: 1rem; width: 95%; }
+    .nav-inner { padding: 0.4rem; gap: 0.25rem; }
+    .nav-links { display: none; }
+    .nav-cta { margin-left: auto; }
+    .hero { min-height: auto; padding: 8rem 0 4rem; }
+    .hero-grid { gap: 2rem; }
+    h1 { font-size: clamp(28px, 8vw, 48px); }
+    .hero-desc { font-size: 1rem; }
+    .hero-ctas { flex-direction: column; align-items: stretch; gap: 1rem; }
+    .btn-outline { justify-content: center; }
+    .btn-link { text-align: center; }
+    .terminal-card { margin: 0 -0.5rem; }
+    .terminal-deco { display: none; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .metric-cell { border-right: none; border-bottom: 1px solid var(--border); padding: 2rem 1.5rem; }
+    .metric-cell:last-child { border-bottom: none; }
+    .metric-num { font-size: 2.5rem; }
+    .feature-cards-stack { flex-direction: column; }
+    .mini-terminal { height: 140px; }
+    .comparison-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .table-row { min-width: 500px; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .section-infrastructure { padding: 4rem 0; }
+    .section-methodology { padding: 4rem 0; }
+    .section-comparison { padding: 4rem 0; }
+    .section-pricing { padding: 4rem 0; }
+    .section-header { margin-bottom: 2rem; }
+    .features-grid { gap: 1rem; }
+    .timeline-step { margin-bottom: 3rem; }
+  }
+
+  /* Small mobile */
+  @media (max-width: 400px) {
+    .container { padding: 0 1rem; }
+    h1 { font-size: 26px; }
+    .hero-desc { font-size: 0.9rem; }
+    .stats-row { grid-template-columns: 1fr; }
+    .price-card { padding: 2rem 1.5rem; }
+    .price-amount { font-size: 2rem; }
+    .ticker-item { font-size: 0.9rem; }
+  }
 </style>
 </head>
 <body>
@@ -548,7 +616,7 @@
         </div>
       </div>
 
-      <div style="position:relative;">
+      <div class="terminal-wrapper" style="position:relative;">
         <div class="terminal-card">
           <div class="term-header">
             <div style="display:flex;align-items:center;gap:8px;">
@@ -602,7 +670,7 @@
               <div class="log-row"><span class="log-exec mono">EXEC</span><span>NVDA ARB</span><span>08ms</span></div>
             </div>
           </div>
-          <div style="position:absolute;right:-12px;top:40px;display:flex;flex-direction:column;gap:8px;">
+          <div class="terminal-deco" style="position:absolute;right:-12px;top:40px;display:flex;flex-direction:column;gap:8px;">
             <div style="width:4px;height:32px;background:rgba(255,255,255,0.08);border-radius:2px;"></div>
             <div style="width:4px;height:16px;background:rgba(255,255,255,0.08);border-radius:2px;"></div>
           </div>
