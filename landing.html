@@ -168,6 +168,11 @@
     border-radius: 4px;
     box-shadow: 0 0 50px rgba(0,255,148,0.08);
     position: relative;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease;
+  }
+  .terminal-card:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 80px rgba(0,255,148,0.15);
   }
   .term-header {
     display: flex; align-items: center; justify-content: space-between;
@@ -254,15 +259,23 @@
 
   /* TICKER */
   .ticker {
-    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-    background: rgba(10,10,10,0.5);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background: var(--carbon);
     padding: 1rem 0; overflow: hidden; position: relative; z-index: 20;
   }
   .ticker-track {
-    display: flex; gap: 2rem; animation: marquee 40s linear infinite;
+    display: flex; align-items: center; gap: 2rem;
+    animation: marquee 40s linear infinite;
     white-space: nowrap;
   }
   @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .ticker-label {
+    font-family: var(--mono-font);
+    font-size: 11px; color: var(--steel);
+    text-transform: uppercase; letter-spacing: 0.15em;
+    padding-left: 1rem; flex-shrink: 0;
+  }
   .ticker-item {
     font-size: 1.1rem; font-weight: 600; color: rgba(232,232,232,0.6);
     flex-shrink: 0;
@@ -601,7 +614,7 @@
 <!-- TICKER -->
 <div class="ticker">
   <div class="ticker-track">
-    <span class="mono" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);">DATA INGESTION PIPELINES:</span>
+    <span class="ticker-label">DATA INGESTION PIPELINES:</span>
     <span class="ticker-sep">|</span>
     <span class="ticker-item">NASDAQ</span><span class="ticker-sep">|</span>
     <span class="ticker-item">BLOOMBERG TERMINAL</span><span class="ticker-sep">|</span>
